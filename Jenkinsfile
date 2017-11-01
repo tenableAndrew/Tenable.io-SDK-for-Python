@@ -26,31 +26,36 @@ try {
       dir("automation") {
         git branch: 'develop', changelog: false, credentialsId: 'bitbucket-checkout', poll: false, url: 'ssh://git@stash.corp.tenablesecurity.com:7999/aut/automation-tenableio.git'
       }
+      dir("site") {
+        git branch: 'qa-staging', changelog: false, credentialsId: 'bitbucket-checkout', poll: false, url: 'ssh://git@stash.corp.tenablesecurity.com:7999/aut/site configs.git'
+      }
+      dir("tenableio-sdk") {
+        checkout scm
+      }
     }
 
     docker.withRegistry('https://docker-registry.cloud.aws.tenablesecurity.com:8888/') {
       docker.image('ci-vulnautomation-base:1.0.9').inside("-u root") {
         stage('build auto') {
-          timeout(time: 10, unit: 'MINUTES') {
+          timeout(time: 30, unit: 'MINUTES') {
             sshagent(['buildenginer_public']) {
               sh 'git config --global user.name "buildenginer"'
               sh 'mkdir ~/.ssh && chmod 600 ~/.ssh'
               sh 'ssh-keyscan -H -p 7999 stash.corp.tenablesecurity.com >> ~/.ssh/known_hosts'
               sh 'ssh-keyscan -H -p 7999 172.25.100.131 >> ~/.ssh/known_hosts'
-              //sh 'cat ~/.ssh/known_hosts'
-              sh 'cd automation && python3 autosetup.py catium --all --no-venv 2>&1'
-              sh '''
-export PYTHONHASHSEED=0 
-export PYTHONPATH=. 
-export CAT_LOG_LEVEL_CONSOLE=INFO
-export CAT_SITE=qa-milestone
-
-env
-cd automation
-pwd
-
-python3 tenableio/commandline/sdk_test_container.py --create_container --raw
-'''
+              sh 'cd automation && python3 autosetup.py catium --all 2>&1'
+//              sh '''
+//export PYTHONHASHSEED=0 
+//export PYTHONPATH=. 
+//export CAT_LOG_LEVEL_CONSOLE=INFO
+//export CAT_SITE=qa-milestone
+//
+//env
+//cd automation
+//pwd
+//
+//python3 tenableio/commandline/sdk_test_container.py --create_container --raw
+//'''
             }
           }
         }
