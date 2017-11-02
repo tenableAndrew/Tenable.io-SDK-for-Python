@@ -43,17 +43,17 @@ try {
               sh 'ssh-keyscan -H -p 7999 stash.corp.tenablesecurity.com >> ~/.ssh/known_hosts'
               sh 'ssh-keyscan -H -p 7999 172.25.100.131 >> ~/.ssh/known_hosts'
               sh '''
-cd automation && python3 autosetup.py catium --all --no-venv 2>&1
-//export PYTHONHASHSEED=0 
-//export PYTHONPATH=. 
-//export CAT_LOG_LEVEL_CONSOLE=INFO
-//export CAT_SITE=qa-milestone
-//
-//env
-//cd automation
-//pwd
-//
-//python3 tenableio/commandline/sdk_test_container.py --create_container --raw
+cd automation || exit 1
+python3 autosetup.py catium --all --no-venv 2>&1
+export PYTHONHASHSEED=0 
+export PYTHONPATH=. 
+export CAT_USE_GRID=true
+
+python3 tenableio/commandline/sdk_test_container.py --create_container --python
+
+cd ../tenableio-sdk || exit 1
+pip3 install -r requirements.txt || exit 1
+py.test tests --junitxml=test-results-junit.xml || exit 1
 '''
             }
           }
