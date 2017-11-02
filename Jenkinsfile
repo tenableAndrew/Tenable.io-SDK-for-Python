@@ -36,13 +36,14 @@ try {
     docker.withRegistry('https://docker-registry.cloud.aws.tenablesecurity.com:8888/') {
       docker.image('ci-vulnautomation-base:1.0.9').inside("-u root") {
         stage('build auto') {
-          timeout(time: 30, unit: 'MINUTES') {
-            sshagent(['buildenginer_public']) {
-              sh 'git config --global user.name "buildenginer"'
-              sh 'mkdir ~/.ssh && chmod 600 ~/.ssh'
-              sh 'ssh-keyscan -H -p 7999 stash.corp.tenablesecurity.com >> ~/.ssh/known_hosts'
-              sh 'ssh-keyscan -H -p 7999 172.25.100.131 >> ~/.ssh/known_hosts'
-              sh '''
+          try {
+            timeout(time: 30, unit: 'MINUTES') {
+              sshagent(['buildenginer_public']) {
+                sh 'git config --global user.name "buildenginer"'
+                sh 'mkdir ~/.ssh && chmod 600 ~/.ssh'
+                sh 'ssh-keyscan -H -p 7999 stash.corp.tenablesecurity.com >> ~/.ssh/known_hosts'
+                sh 'ssh-keyscan -H -p 7999 172.25.100.131 >> ~/.ssh/known_hosts'
+                sh '''
 cd automation || exit 1
 python3 autosetup.py catium --all --no-venv 2>&1
 export PYTHONHASHSEED=0 
@@ -55,55 +56,17 @@ cd ../tenableio-sdk || exit 1
 pip3 install -r requirements.txt || exit 1
 py.test tests --junitxml=test-results-junit.xml || exit 1
 '''
+              }
             }
+          }
+          finally {
+            sh 'find . -name \*.xml'
+	    step([$class: 'JUnitResultArchiver', testResults: 'tenableio-sdk/*.xml'])
           }
         }
       }
     } 
   }
-
-//  node('docker') {
-//
-//    // Cleanup within the container as we run as root
-//    docker.withRegistry('https://docker-registry.cloud.aws.tenablesecurity.com:8888/') {
-//      docker.image('ci-vulnautomation-base:1.0.9').inside("-u root") {
-//        stage('clean java') {
-//          sh 'chown -R 1000:1000 .'
-//        }
-//      }
-//    } 
-//
-//    deleteDir()
-//
-//    stage('scm java') {
-//      checkout scm
-//      unstash 'Config'
-//      sh 'find tenableio-sdk'
-//    }
-//
-//    docker.withRegistry('https://docker-registry.cloud.aws.tenablesecurity.com:8888/') {
-//      docker.image('ci-java-base:2.0.18').inside {
-//        stage('build java') {
-//          try {
-//            timeout(time: 30, unit: 'MINUTES') {
-//              sh '''
-//find .
-//cat ./tenableio-sdk/tio_config.txt | sed 's/^/systemProp./g' > gradle.properties
-//
-//cat gradle.properties
-//
-//chmod +x gradlew
-//./gradlew build
-//'''
-//            }
-////          }
-//          finally {
-//	    step([$class: 'JUnitResultArchiver', testResults: 'build/test-results/test/*.xml'])
-//          }
-//        }
-//      }
-//    }
-//  }
 }
 catch (exc) {
   echo "caught exception: ${exc}"
