@@ -42,8 +42,8 @@ try {
               sh 'mkdir ~/.ssh && chmod 600 ~/.ssh'
               sh 'ssh-keyscan -H -p 7999 stash.corp.tenablesecurity.com >> ~/.ssh/known_hosts'
               sh 'ssh-keyscan -H -p 7999 172.25.100.131 >> ~/.ssh/known_hosts'
-              sh 'cd automation && python3 autosetup.py catium --all 2>&1'
-//              sh '''
+              sh '''
+cd automation && python3 autosetup.py catium --all --no-venv 2>&1
 //export PYTHONHASHSEED=0 
 //export PYTHONPATH=. 
 //export CAT_LOG_LEVEL_CONSOLE=INFO
@@ -54,7 +54,7 @@ try {
 //pwd
 //
 //python3 tenableio/commandline/sdk_test_container.py --create_container --raw
-//'''
+'''
             }
           }
         }
