@@ -22,17 +22,16 @@ try {
 
     // Pull the automation framework from develop
     stage('scm auto') {
+      dir("tenableio-sdk") {
+        checkout scm
+      }
       dir("automation") {
         git branch: 'develop', changelog: false, credentialsId: 'bitbucket-checkout', poll: false, url: 'ssh://git@stash.corp.tenablesecurity.com:7999/aut/automation-tenableio.git'
       }
       dir("site") {
         git branch: 'qa-staging', changelog: false, credentialsId: 'bitbucket-checkout', poll: false, url: 'ssh://git@stash.corp.tenablesecurity.com:7999/aut/site-configs.git'
       }
-      dir("tenableio-sdk") {
-        checkout scm
-      }
     }
-
 
     docker.withRegistry('https://docker-registry.cloud.aws.tenablesecurity.com:8888/') {
       docker.image('ci-vulnautomation-base:1.0.9').inside("-u root") {
