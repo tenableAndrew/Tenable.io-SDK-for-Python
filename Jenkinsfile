@@ -37,7 +37,7 @@ try {
       docker.image('ci-vulnautomation-base:1.0.9').inside("-u root") {
         stage('build auto') {
           try {
-            timeout(time: 30, unit: 'MINUTES') {
+            timeout(time: 60, unit: 'MINUTES') {
               sshagent(['buildenginer_public']) {
                 sh 'git config --global user.name "buildenginer"'
                 sh 'mkdir ~/.ssh && chmod 600 ~/.ssh'
