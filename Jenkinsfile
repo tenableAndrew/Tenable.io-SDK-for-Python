@@ -60,7 +60,7 @@ py.test tests --junitxml=test-results-junit.xml || exit 1
             }
           }
           finally {
-            sh 'find . -name \*.xml'
+            sh 'find . -name *.xml'
 	    step([$class: 'JUnitResultArchiver', testResults: 'tenableio-sdk/*.xml'])
           }
         }
