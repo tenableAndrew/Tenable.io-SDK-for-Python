@@ -31,7 +31,7 @@ class TestWorkbenchesApi(BaseTest):
         except TenableIOApiException as e:
             assert e.code is TenableIOErrorCode.BAD_REQUEST, u'Appropriate exception thrown.'
 
-    def test_asset_vulnerabilities(self, client):
+    def test_asset_vulnerabilities_two(self, client):
         try:
             client.workbenches_api.asset_vulnerabilities('test_asset_vulnerabilities')
             assert False, u'TenableIOApiException should have been thrown for bad ID.'
