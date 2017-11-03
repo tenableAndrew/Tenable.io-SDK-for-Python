@@ -66,9 +66,12 @@ py.test tests --junitxml=test-results-junit.xml || exit 1
         }
       }
     } 
+
+    hipchatSend room: "T.io SDK", message: "Build Successfully: <a href=\"${env.JOB_URL}\">${env.JOB_NAME} ${env.BUILD_NUMBER}</a>", color: "GREEN", token: "584f28c72ae1648f179c4716b37dfd", notify: true
   }
 }
 catch (exc) {
   echo "caught exception: ${exc}"
   currentBuild.result = 'FAILURE'
+  hipchatSend room: "T.io SDK", message: "Build Failed: <a href=\"${env.JOB_URL}\">${env.JOB_NAME} ${env.BUILD_NUMBER}</a>", color: "RED", token: "584f28c72ae1648f179c4716b37dfd", notify: true
 }
