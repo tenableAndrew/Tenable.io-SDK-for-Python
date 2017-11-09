@@ -38,7 +38,7 @@ try {
         stage('build auto') {
           try {
             timeout(time: 60, unit: 'MINUTES') {
-              sshagent(['buildenginer_public']) {
+              sshagent(['bitbucket-checkout']) {
                 sh 'git config --global user.name "buildenginer"'
                 sh 'mkdir ~/.ssh && chmod 600 ~/.ssh'
                 sh 'ssh-keyscan -H -p 7999 stash.corp.tenablesecurity.com >> ~/.ssh/known_hosts'
