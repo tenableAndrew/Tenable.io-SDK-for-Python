@@ -34,7 +34,7 @@ class TestWorkbenchesApi(BaseTest):
         assert asset.first_seen is None, u'Expect no date for assets that do not exist.'
         assert len(asset.ipv4) == 0, u'Expect 0 ips to be returned.'
 
-    def test_asset_vulnerabilities_two(self, client):
+    def test_asset_vulnerabilities(self, client):
         vulnerabilities = client.workbenches_api.asset_vulnerabilities('test_asset_vulnerabilities')
         assert len(vulnerabilities.vulnerabilities) == 0, u'Expected 0 vulnerabilities to be returned for invalid asset.'
 
